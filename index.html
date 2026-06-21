@@ -36,6 +36,12 @@
         <button data-mode="cover" class="seg-btn" type="button">الخطاب التعريفي</button>
       </div>
 
+      <!-- مؤشّر الاكتمال -->
+      <div class="progress doc-only" data-only="cv">
+        <div class="prog-track"><div id="progBar" class="prog-bar"></div></div>
+        <span id="progLabel" class="prog-label">اكتمال السيرة: 0%</span>
+      </div>
+
       <!-- التصميم -->
       <div class="panel">
         <h2 class="panel-title">التصميم</h2>
@@ -72,6 +78,16 @@
       <!-- المعلومات الشخصية -->
       <div class="panel">
         <h2 class="panel-title">المعلومات الشخصية</h2>
+        <div class="photo-row">
+          <div id="photoThumb" class="photo-thumb" aria-hidden="true"></div>
+          <div class="photo-ctrl">
+            <label class="btn small photo-btn">
+              صورة شخصية (اختياري)
+              <input id="photoInput" type="file" accept="image/*" hidden />
+            </label>
+            <button id="photoRemove" class="btn small ghost" type="button" hidden>إزالة الصورة</button>
+          </div>
+        </div>
         <div class="grid2">
           <div class="field"><label>الاسم الكامل</label><input data-bind="fullName" placeholder="مثال: سارة العمري" /></div>
           <div class="field"><label>المسمّى الوظيفي</label><input data-bind="title" placeholder="مهندسة برمجيات" /></div>
@@ -115,6 +131,15 @@
           <button class="btn small" type="button" data-add="education">+ إضافة</button>
         </div>
         <div id="educationList" class="repeat"></div>
+      </div>
+
+      <!-- الشهادات والدورات -->
+      <div class="panel doc-only" data-only="cv">
+        <div class="panel-head">
+          <h2 class="panel-title">الشهادات والدورات</h2>
+          <button class="btn small" type="button" data-add="certifications">+ إضافة</button>
+        </div>
+        <div id="certificationsList" class="repeat"></div>
       </div>
 
       <!-- المهارات واللغات -->
