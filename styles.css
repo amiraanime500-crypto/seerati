@@ -85,9 +85,9 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);
 
 /* repeatable */
 .repeat{display:flex;flex-direction:column;gap:12px}
-.rep-item{border:1px solid var(--line);border-radius:11px;padding:12px;background:#FCFCFD;position:relative}
-.rep-item .rep-del{position:absolute;left:8px;top:8px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1}
-.rep-item .rep-del:hover{color:#D14343}
+.rep-item{border:1px solid var(--line);border-radius:11px;padding:34px 12px 12px;background:#FCFCFD;position:relative}
+.rep-item .rep-del{border:1px solid var(--line);background:#fff;border-radius:6px;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;width:22px;height:22px}
+.rep-item .rep-del:hover{color:#D14343;border-color:#D14343}
 
 /* ===== صفحة السيرة (A4) ===== */
 .cv{
@@ -157,6 +157,35 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);
 /* ===== نوع المستند (تبويبات) ===== */
 .docmode{display:flex;width:100%;margin-bottom:4px}
 .docmode .seg-btn{flex:1;font-weight:600}
+
+/* ===== مؤشّر الاكتمال ===== */
+.progress{display:flex;align-items:center;gap:10px;margin-bottom:6px;padding:0 2px}
+.prog-track{flex:1;height:7px;background:#dfe3e8;border-radius:99px;overflow:hidden}
+.prog-bar{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s ease}
+.prog-bar.full{background:#16A34A}
+.prog-label{font-size:11.5px;color:var(--muted);white-space:nowrap}
+
+/* ===== الصورة الشخصية ===== */
+.photo-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.photo-thumb{width:56px;height:56px;border-radius:50%;background:#eef1f4 center/cover no-repeat;
+  border:2px dashed var(--line);flex:0 0 auto}
+.photo-thumb.has{border-style:solid;border-color:var(--accent)}
+.photo-ctrl{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.photo-btn{cursor:pointer;display:inline-flex;align-items:center}
+
+/* ===== أدوات العنصر المتكرّر ===== */
+.rep-tools{display:flex;gap:4px;position:absolute;top:8px;left:8px}
+.rep-move{width:22px;height:22px;border:1px solid var(--line);background:#fff;border-radius:6px;
+  cursor:pointer;font-size:9px;line-height:1;color:var(--ink-soft)}
+.rep-move:disabled{opacity:.3;cursor:default}
+.rep-move:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+
+/* ===== الصورة داخل السيرة ===== */
+.cv header.has-photo{display:flex;align-items:center;gap:16px}
+.cv .cv-photo{width:96px;height:96px;border-radius:50%;background:center/cover no-repeat;
+  flex:0 0 auto;border:3px solid var(--accent)}
+.cv.tpl-classic header.has-photo{flex-direction:column;text-align:center}
+.cv .cv-head-text{flex:1;min-width:0}
 
 /* ===== اتجاه LTR (النسخة الإنجليزية) ===== */
 .cv.ltr{text-align:left}
