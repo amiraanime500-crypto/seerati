@@ -27,10 +27,12 @@
     accent: "#0E7C66",
     font: "'IBM Plex Sans Arabic', sans-serif",
     lang: "ar",
+    photo: "",
     fullName: "", title: "", email: "", phone: "", city: "", link: "",
     summary: "",
     experience: [],
     education: [],
+    certifications: [],
     skills: "", languages: "",
     clTo: "", clCompany: "", clRole: "", clBody: "",
   };
@@ -38,11 +40,11 @@
   // النصوص حسب اللغة (عربي / إنجليزي)
   const T = {
     ar: {
-      summary: "نبذة", exp: "الخبرات العملية", edu: "التعليم", skills: "المهارات", langs: "اللغات",
+      summary: "نبذة", exp: "الخبرات العملية", edu: "التعليم", certs: "الشهادات والدورات", skills: "المهارات", langs: "اللغات",
       namePh: "اسمك الكامل", dear: "إلى", regards: "وتفضّلوا بقبول فائق الاحترام،", re: "الموضوع: التقدّم لوظيفة",
     },
     en: {
-      summary: "Summary", exp: "Experience", edu: "Education", skills: "Skills", langs: "Languages",
+      summary: "Summary", exp: "Experience", edu: "Education", certs: "Certifications & Courses", skills: "Skills", langs: "Languages",
       namePh: "Your Full Name", dear: "Dear", regards: "Sincerely,", re: "Re: Application for",
     },
   };
@@ -135,6 +137,46 @@
     save(true);
   });
 
+  // ===== الصورة الشخصية (تصغير تلقائي قبل التخزين) =====
+  const photoInput = $("#photoInput");
+  if (photoInput) {
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files && photoInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 400;
+          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+          const cnv = document.createElement("canvas");
+          cnv.width = w; cnv.height = h;
+          cnv.getContext("2d").drawImage(img, 0, 0, w, h);
+          state.photo = cnv.toDataURL("image/jpeg", 0.82);
+          syncPhotoUI();
+          render();
+          save(true);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    $("#photoRemove").addEventListener("click", () => {
+      state.photo = "";
+      photoInput.value = "";
+      syncPhotoUI();
+      render();
+      save(true);
+    });
+  }
+  function syncPhotoUI() {
+    const thumb = $("#photoThumb"), rm = $("#photoRemove");
+    if (!thumb) return;
+    if (state.photo) { thumb.style.backgroundImage = `url(${state.photo})`; thumb.classList.add("has"); rm.hidden = false; }
+    else { thumb.style.backgroundImage = ""; thumb.classList.remove("has"); rm.hidden = true; }
+  }
+
   // ===== نوع المستند (سيرة / خطاب) =====
   function applyMode() {
     $$(".doc-only").forEach((p) => (p.hidden = p.dataset.only !== mode));
@@ -161,6 +203,11 @@
       { k: "role", ph: "الدرجة / التخصص" },
       { k: "when", ph: "سنة التخرّج" },
     ],
+    certifications: [
+      { k: "org", ph: "الجهة المانحة" },
+      { k: "role", ph: "اسم الشهادة / الدورة" },
+      { k: "when", ph: "السنة" },
+    ],
   };
 
   function renderRepeat(type) {
@@ -169,6 +216,25 @@
     state[type].forEach((item, i) => {
       const wrap = document.createElement("div");
       wrap.className = "rep-item";
+
+      const tools = document.createElement("div");
+      tools.className = "rep-tools";
+      const move = (from, to) => {
+        if (to < 0 || to >= state[type].length) return;
+        const arr = state[type];
+        [arr[from], arr[to]] = [arr[to], arr[from]];
+        renderRepeat(type);
+        render();
+        save(true);
+      };
+      const up = document.createElement("button");
+      up.type = "button"; up.className = "rep-move"; up.textContent = "▲"; up.title = "تحريك لأعلى";
+      up.disabled = i === 0;
+      up.addEventListener("click", () => move(i, i - 1));
+      const down = document.createElement("button");
+      down.type = "button"; down.className = "rep-move"; down.textContent = "▼"; down.title = "تحريك لأسفل";
+      down.disabled = i === state[type].length - 1;
+      down.addEventListener("click", () => move(i, i + 1));
       const del = document.createElement("button");
       del.className = "rep-del";
       del.type = "button";
@@ -180,7 +246,10 @@
         render();
         save(true);
       });
-      wrap.appendChild(del);
+      tools.appendChild(up);
+      tools.appendChild(down);
+      tools.appendChild(del);
+      wrap.appendChild(tools);
       FIELDS[type].forEach((f) => {
         const field = document.createElement("div");
         field.className = "field";
@@ -284,22 +353,50 @@
 
     const expHtml = state.experience.filter(hasAny).map(entry).join("");
     const eduHtml = state.education.filter(hasAny).map(entry).join("");
+    const certHtml = state.certifications.filter(hasAny).map(entry).join("");
     const skills = splitTags(state.skills);
     const langs = splitTags(state.languages);
+    const photo = state.photo ? `<div class="cv-photo" style="background-image:url(${state.photo})"></div>` : "";
 
     cv.innerHTML = `
-      <header>
-        <div class="cv-name">${esc(state.fullName) || t.namePh}</div>
-        ${state.title ? `<div class="cv-title">${esc(state.title)}</div>` : ""}
-        ${contact ? `<div class="cv-contact">${contact}</div>` : ""}
+      <header class="${state.photo ? "has-photo" : ""}">
+        ${photo}
+        <div class="cv-head-text">
+          <div class="cv-name">${esc(state.fullName) || t.namePh}</div>
+          ${state.title ? `<div class="cv-title">${esc(state.title)}</div>` : ""}
+          ${contact ? `<div class="cv-contact">${contact}</div>` : ""}
+        </div>
       </header>
       ${state.summary ? `<div class="cv-section"><div class="cv-h">${t.summary}</div><div class="cv-summary">${esc(state.summary)}</div></div>` : ""}
       ${expHtml ? `<div class="cv-section"><div class="cv-h">${t.exp}</div>${expHtml}</div>` : ""}
       ${eduHtml ? `<div class="cv-section"><div class="cv-h">${t.edu}</div>${eduHtml}</div>` : ""}
+      ${certHtml ? `<div class="cv-section"><div class="cv-h">${t.certs}</div>${certHtml}</div>` : ""}
       ${skills.length ? `<div class="cv-section"><div class="cv-h">${t.skills}</div><div class="cv-tags">${skills.map(x=>`<span class="cv-tag">${esc(x)}</span>`).join("")}</div></div>` : ""}
       ${langs.length ? `<div class="cv-section"><div class="cv-h">${t.langs}</div><div class="cv-tags">${langs.map(x=>`<span class="cv-tag">${esc(x)}</span>`).join("")}</div></div>` : ""}
       <div class="watermark">${WM}</div>
     `;
+    updateProgress();
+  }
+
+  // ===== مؤشّر اكتمال السيرة =====
+  function updateProgress() {
+    const bar = $("#progBar"), lbl = $("#progLabel");
+    if (!bar) return;
+    const checks = [
+      !!state.fullName.trim(),
+      !!state.title.trim(),
+      !!(state.email.trim() || state.phone.trim()),
+      !!state.summary.trim(),
+      state.experience.some(hasAny),
+      state.education.some(hasAny),
+      splitTags(state.skills).length > 0,
+      splitTags(state.languages).length > 0,
+    ];
+    const done = checks.filter(Boolean).length;
+    const pct = Math.round((done / checks.length) * 100);
+    bar.style.width = pct + "%";
+    bar.className = "prog-bar" + (pct === 100 ? " full" : "");
+    lbl.textContent = "اكتمال السيرة: " + pct + "%";
   }
 
   // ===== عرض الخطاب التعريفي =====
@@ -365,7 +462,9 @@
   $$("#langPicker .seg-btn").forEach((x) => x.classList.toggle("is-active", x.dataset.lang === state.lang));
   $$("#templatePicker .seg-btn").forEach((x) => x.classList.toggle("is-active", x.dataset.tpl === state.template));
   applyMode();
+  syncPhotoUI();
   renderRepeat("experience");
   renderRepeat("education");
+  renderRepeat("certifications");
   render();
 })();
