@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سيرتي — أنشئ سيرتك الذاتية بالعربية مجاناً</title>
+  <meta name="description" content="أنشئ سيرة ذاتية عربية احترافية مجاناً وحمّلها PDF. قوالب أنيقة بدعم كامل للعربية واتجاه RTL، بلا تسجيل دخول." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Cairo:wght@400;600;700;800&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- شريط علوي -->
+  <header class="topbar no-print">
+    <div class="brand">
+      <span class="brand-mark">س</span>
+      <div>
+        <strong>سيرتي</strong>
+        <small>سيرة ذاتية عربية، مجاناً</small>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="btnSave" class="btn ghost" type="button">حفظ مؤقت</button>
+      <button id="btnReset" class="btn ghost" type="button">تفريغ</button>
+      <button id="btnDownload" class="btn primary" type="button">تحميل PDF</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- المحرّر -->
+    <section class="editor no-print" aria-label="محرّر السيرة">
+      <!-- نوع المستند -->
+      <div class="seg docmode" id="docModePicker">
+        <button data-mode="cv" class="seg-btn is-active" type="button">السيرة الذاتية</button>
+        <button data-mode="cover" class="seg-btn" type="button">الخطاب التعريفي</button>
+      </div>
+
+      <!-- التصميم -->
+      <div class="panel">
+        <h2 class="panel-title">التصميم</h2>
+        <div class="field-row">
+          <label>القالب</label>
+          <div class="seg" id="templatePicker">
+            <button data-tpl="modern" class="seg-btn is-active" type="button">عصري</button>
+            <button data-tpl="classic" class="seg-btn" type="button">كلاسيكي</button>
+            <button data-tpl="compact" class="seg-btn pro" type="button">مدمج ★</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <label>اللون</label>
+          <div class="swatches" id="colorPicker"></div>
+        </div>
+        <div class="field-row">
+          <label>الخط</label>
+          <select id="fontPicker">
+            <option value="'IBM Plex Sans Arabic', sans-serif">IBM Plex عربي</option>
+            <option value="'Cairo', sans-serif">القاهرة</option>
+            <option value="'Tajawal', sans-serif">تجوال</option>
+            <option value="'Amiri', serif">أميري</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label>اللغة</label>
+          <div class="seg" id="langPicker">
+            <button data-lang="ar" class="seg-btn is-active" type="button">عربي</button>
+            <button data-lang="en" class="seg-btn" type="button">English</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- المعلومات الشخصية -->
+      <div class="panel">
+        <h2 class="panel-title">المعلومات الشخصية</h2>
+        <div class="grid2">
+          <div class="field"><label>الاسم الكامل</label><input data-bind="fullName" placeholder="مثال: سارة العمري" /></div>
+          <div class="field"><label>المسمّى الوظيفي</label><input data-bind="title" placeholder="مهندسة برمجيات" /></div>
+          <div class="field"><label>البريد الإلكتروني</label><input data-bind="email" placeholder="name@email.com" /></div>
+          <div class="field"><label>الهاتف</label><input data-bind="phone" placeholder="+966 5x xxx xxxx" /></div>
+          <div class="field"><label>المدينة</label><input data-bind="city" placeholder="الرياض، السعودية" /></div>
+          <div class="field"><label>رابط (LinkedIn / موقع)</label><input data-bind="link" placeholder="linkedin.com/in/..." /></div>
+        </div>
+      </div>
+
+      <!-- الخطاب التعريفي -->
+      <div class="panel doc-only" data-only="cover" hidden>
+        <h2 class="panel-title">الخطاب التعريفي</h2>
+        <div class="grid2">
+          <div class="field"><label>إلى (المسؤول)</label><input data-bind="clTo" placeholder="مدير التوظيف" /></div>
+          <div class="field"><label>الجهة / الشركة</label><input data-bind="clCompany" placeholder="اسم الشركة" /></div>
+        </div>
+        <div class="field"><label>الوظيفة المتقدَّم لها</label><input data-bind="clRole" placeholder="مهندس برمجيات" /></div>
+        <div class="field"><label>نص الخطاب</label><textarea data-bind="clBody" rows="8" placeholder="اكتب فقرات الخطاب هنا. لماذا أنت مناسب لهذه الوظيفة وما الذي تقدّمه."></textarea></div>
+      </div>
+
+      <!-- الملخص -->
+      <div class="panel doc-only" data-only="cv">
+        <h2 class="panel-title">نبذة مختصرة</h2>
+        <div class="field"><textarea data-bind="summary" rows="3" placeholder="سطران يصفان خبرتك وما تتميّز به."></textarea></div>
+      </div>
+
+      <!-- الخبرات -->
+      <div class="panel doc-only" data-only="cv">
+        <div class="panel-head">
+          <h2 class="panel-title">الخبرات العملية</h2>
+          <button class="btn small" type="button" data-add="experience">+ إضافة</button>
+        </div>
+        <div id="experienceList" class="repeat"></div>
+      </div>
+
+      <!-- التعليم -->
+      <div class="panel doc-only" data-only="cv">
+        <div class="panel-head">
+          <h2 class="panel-title">التعليم</h2>
+          <button class="btn small" type="button" data-add="education">+ إضافة</button>
+        </div>
+        <div id="educationList" class="repeat"></div>
+      </div>
+
+      <!-- المهارات واللغات -->
+      <div class="panel doc-only" data-only="cv">
+        <h2 class="panel-title">المهارات واللغات</h2>
+        <div class="field"><label>المهارات (افصل بفاصلة)</label><input data-bind="skills" placeholder="إدارة مشاريع، تحليل بيانات، تصميم" /></div>
+        <div class="field"><label>اللغات (افصل بفاصلة)</label><input data-bind="languages" placeholder="العربية (الأم)، الإنجليزية (متقدّم)" /></div>
+      </div>
+    </section>
+
+    <!-- المعاينة -->
+    <section class="preview-wrap" aria-label="معاينة">
+      <div class="preview-scroll">
+        <article id="cv" class="cv tpl-modern" dir="rtl">
+          <!-- يُحقن بالـ JS -->
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- نافذة الفتح -->
+  <div id="unlockModal" class="modal no-print" hidden>
+    <div class="modal-card">
+      <button class="modal-x" id="unlockClose" type="button" aria-label="إغلاق">×</button>
+      <h3>حمّل سيرتك بلا علامة مائية</h3>
+      <p class="modal-sub">النسخة المجانية تضيف سطراً صغيراً أسفل الصفحة. لإزالته نهائياً والحصول على القوالب الاحترافية:</p>
+      <ul class="perks">
+        <li>إزالة العلامة المائية من كل التحميلات</li>
+        <li>القالب الاحترافي «المدمج» + ألوان إضافية</li>
+        <li>دفعة واحدة، بلا اشتراك</li>
+      </ul>
+      <a id="buyLink" class="btn primary block" href="#" target="_blank" rel="noopener">احصل على الكود — 2.99$</a>
+      <div class="unlock-row">
+        <input id="licenseInput" placeholder="ألصق كود التفعيل هنا" />
+        <button id="licenseApply" class="btn" type="button">تفعيل</button>
+      </div>
+      <p id="licenseMsg" class="license-msg"></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
